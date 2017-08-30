@@ -1,14 +1,22 @@
 package com.covalent;
 
+import java.util.concurrent.Executor;
+
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 //https://www.agilegroup.co.jp/technote/springboot-fileupload-error-handling.html
 @SpringBootApplication
+@EnableScheduling
+@EnableAsync
 public class SpringBootWebApplication {
 
     private int maxUploadSizeInMb = 10 * 1024 * 1024; // 10 MB
@@ -34,5 +42,17 @@ public class SpringBootWebApplication {
         return tomcat;
 
     }
+    
+    @Bean
+	public Executor asyncExecutor() {
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(2);
+		executor.setMaxPoolSize(2);
+		executor.setQueueCapacity(500);
+		executor.setThreadNamePrefix("GithubLookup-");
+		executor.initialize();
+		System.out.println("asyncExecutor initialize");
+		return executor;
+	}
 
 }

@@ -28,8 +28,9 @@ import com.opencsv.bean.CsvToBean;
 @Service
 public class FilesProcessService {
 
-	private static final Logger logger = LoggerFactory.getLogger(FilesProcessService.class);
-	
+	private static final Logger logger = LoggerFactory
+			.getLogger(FilesProcessService.class);
+
 	@Autowired
 	private final CovalentService service;
 
@@ -37,64 +38,88 @@ public class FilesProcessService {
 	FilesProcessService(CovalentService service) {
 		this.service = service;
 	}
+
 	@Async
-	public CompletableFuture<Iterable<FileModel>> processTheFile(MultipartFile file) throws InterruptedException, IOException {
-		logger.info("Looking up users .... ");
+	public CompletableFuture<Iterable<FileModel>> processTheFile(
+			MultipartFile file) throws InterruptedException, IOException {
+		System.out.println("processTheFile Looking up users .... ");
 		// Artificial delay of 1s for demonstration purposes
-		Thread.sleep(1000L);
 		return CompletableFuture.completedFuture(processFile(file));
 	}
-	
-	private List<FileModel> processFile(MultipartFile file) throws IOException {
-		/** Uploading File **/
-		byte[] bytes = file.getBytes();
-		Path path = Paths.get(getCovalentProperty("covalent.upload.path") + file.getOriginalFilename());
-		Files.write(path, bytes);
-		FileModel fileModel = new FileModel();
-		fileModel.setFileName(file.getOriginalFilename());
-		fileModel.setFileUrl(getCovalentProperty("covalent.upload.path") + file.getOriginalFilename());
-		fileModel.setFixedFileStatus(CovalentConstants.FILE_UPLOADED);
-		fileModel = service.create(fileModel);
-		System.out.println("Upload Completed" + fileModel.toString());
-		
-		/** Parsing File **/
-		List<MetaData> metaDataList = parseCSVFile(file.getOriginalFilename());
-		fileModel.setFixedFileStatus(CovalentConstants.FILE_PARSED);
-		service.update(fileModel);
-		System.out.println("Parsing Completed");
-		
-		/** Transforming File **/
-		List<MetaData> transFormedMetaDataList = transformData(metaDataList);
-		fileModel.setFixedFileStatus(CovalentConstants.FILE_TRANSFORMED);
-		service.update(fileModel);
-		System.out.println("Data transformation Completed");
 
-		/** Writing File **/
-		writeTransformedData(file.getOriginalFilename(), transFormedMetaDataList);
-		String fixedFile = file.getOriginalFilename();
-		fileModel.setFixedFileName(fixedFile.substring(0, fixedFile.length() - 4) + 
-				getCovalentProperty("covalent.fixed.file.suffix") + ".csv");
-		fileModel.setFixedFileUrl(getCovalentProperty("covalent.download.path") + fixedFile.substring(0, fixedFile.length() - 4) + 
-				getCovalentProperty("covalent.fixed.file.suffix") + ".csv");
-		fileModel.setFixedFileStatus(CovalentConstants.FILE_FIXED);
-		service.update(fileModel);
-		System.out.println("CSV generated Completed");
-		
-		List<FileModel> fileList = service.findAll();
-		System.out.println("Fetched all records");
-		
-		/** Response **/
-		/*redirectAttributes.addFlashAttribute("message", "Fixed CSV file generated succuessfully' "
-				+ getCovalentProperty("covalent.download.path") + fixedFile.substring(0, fixedFile.length() - 4) + 
-				getCovalentProperty("covalent.fixed.file.suffix") + ".csv" + "'");
-		
-		List<FileModel> fileList = service.findAll();
-		redirectAttributes.addFlashAttribute("fileList", fileList);*/
-		
+	private List<FileModel> processFile(MultipartFile file) throws IOException {
+		List<FileModel> fileList = null;
+		try {
+			/** Uploading File **/
+			System.out.println("processFile");
+
+			byte[] bytes = file.getBytes();
+			System.out.println(" after file.getBytes()");
+			System.out.println(Thread.currentThread());
+			Path path = Paths.get(getCovalentProperty("covalent.upload.path")
+					+ file.getOriginalFilename());
+			Files.write(path, bytes);
+			FileModel fileModel = new FileModel();
+			fileModel.setFileName(file.getOriginalFilename());
+			fileModel.setFileUrl(getCovalentProperty("covalent.upload.path")
+					+ file.getOriginalFilename());
+			fileModel.setFixedFileStatus(CovalentConstants.FILE_UPLOADED);
+			fileModel = service.create(fileModel);
+			System.out.println("Upload Completed" + fileModel.toString());
+
+			/** Parsing File **/
+			List<MetaData> metaDataList = parseCSVFile(file
+					.getOriginalFilename());
+			fileModel.setFixedFileStatus(CovalentConstants.FILE_PARSED);
+			service.update(fileModel);
+			System.out.println("Parsing Completed");
+
+			/** Transforming File **/
+			List<MetaData> transFormedMetaDataList = transformData(metaDataList);
+			fileModel.setFixedFileStatus(CovalentConstants.FILE_TRANSFORMED);
+			service.update(fileModel);
+			System.out.println("Data transformation Completed");
+
+			/** Writing File **/
+			writeTransformedData(file.getOriginalFilename(),
+					transFormedMetaDataList);
+			String fixedFile = file.getOriginalFilename();
+			fileModel.setFixedFileName(fixedFile.substring(0,
+					fixedFile.length() - 4)
+					+ getCovalentProperty("covalent.fixed.file.suffix")
+					+ ".csv");
+			fileModel
+					.setFixedFileUrl(getCovalentProperty("covalent.download.path")
+							+ fixedFile.substring(0, fixedFile.length() - 4)
+							+ getCovalentProperty("covalent.fixed.file.suffix")
+							+ ".csv");
+			fileModel.setFixedFileStatus(CovalentConstants.FILE_FIXED);
+			service.update(fileModel);
+			System.out.println("CSV generated Completed");
+
+			fileList = service.findAll();
+			System.out.println("Fetched all records");
+
+			/** Response **/
+			/*
+			 * redirectAttributes.addFlashAttribute("message",
+			 * "Fixed CSV file generated succuessfully' " +
+			 * getCovalentProperty("covalent.download.path") +
+			 * fixedFile.substring(0, fixedFile.length() - 4) +
+			 * getCovalentProperty("covalent.fixed.file.suffix") + ".csv" +
+			 * "'");
+			 * 
+			 * List<FileModel> fileList = service.findAll();
+			 * redirectAttributes.addFlashAttribute("fileList", fileList);
+			 */
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+
 		return fileList;
-		
+
 	}
-	
+
 	private String getCovalentProperty(String property) {
 		Properties prop = new Properties();
 		InputStream input = null;
@@ -118,14 +143,19 @@ public class FilesProcessService {
 		}
 		return prop.getProperty(property);
 	}
-	
-	private void writeTransformedData(String fileName, List<MetaData> metaDataList) {
+
+	private void writeTransformedData(String fileName,
+			List<MetaData> metaDataList) {
 		CsvUtil csvUtil = new CsvUtil();
-		fileName = fileName.substring(0, fileName.length() - 4) + getCovalentProperty("covalent.fixed.file.suffix") + ".csv";
-		CSVWriter csvWriter = csvUtil.getCSVWriter(getCovalentProperty("covalent.download.path") + fileName);
+		fileName = fileName.substring(0, fileName.length() - 4)
+				+ getCovalentProperty("covalent.fixed.file.suffix") + ".csv";
+		CSVWriter csvWriter = csvUtil
+				.getCSVWriter(getCovalentProperty("covalent.download.path")
+						+ fileName);
 		List<String[]> data = CsvUtil.toStringArray(metaDataList);
 		System.out.println(data);
-		System.out.println(getCovalentProperty("covalent.download.path") + fileName);
+		System.out.println(getCovalentProperty("covalent.download.path")
+				+ fileName);
 		csvWriter.writeAll(data);
 		try {
 			csvWriter.close();
@@ -134,12 +164,15 @@ public class FilesProcessService {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private List<MetaData> parseCSVFile(String fileName) {
 		CsvUtil csvUtil = new CsvUtil();
 		CsvToBean<MetaData> csvToBean = new CsvToBean<MetaData>();
-		CSVReader coavlentCsvReader = csvUtil.getCSVReader(getCovalentProperty("covalent.upload.path") + fileName);
-		List<MetaData> metaDataList = csvToBean.parse(csvUtil.getColumnStrategy(), coavlentCsvReader);
+		CSVReader coavlentCsvReader = csvUtil
+				.getCSVReader(getCovalentProperty("covalent.upload.path")
+						+ fileName);
+		List<MetaData> metaDataList = csvToBean.parse(
+				csvUtil.getColumnStrategy(), coavlentCsvReader);
 		try {
 			coavlentCsvReader.close();
 		} catch (IOException e) {
@@ -148,21 +181,28 @@ public class FilesProcessService {
 		}
 		return metaDataList;
 	}
-	
+
 	private List<MetaData> transformData(List<MetaData> metaDataList) {
-		SpellChker spellChecker = new SpellChker(getCovalentProperty("covalent.standard.dict.path"));
+		SpellChker spellChecker = new SpellChker(
+				getCovalentProperty("covalent.standard.dict.path"));
 		Properties abbProperties = getAbbreviations();
 		for (MetaData metaData : metaDataList) {
-			metaData.setDescription(replaceAbbrevations(abbProperties, metaData.getDescription()));
-			metaData.setScriptSuperNotes(replaceAbbrevations(abbProperties, metaData.getScriptSuperNotes()));
-			metaData.setCommentsTelecine(replaceAbbrevations(abbProperties, metaData.getCommentsTelecine()));
-			metaData.setDescription(spellChecker.doCorrection(metaData.getDescription()));
-			metaData.setScriptSuperNotes(spellChecker.doCorrection(metaData.getScriptSuperNotes()));
-			metaData.setCommentsTelecine(spellChecker.doCorrection(metaData.getCommentsTelecine()));
+			metaData.setDescription(replaceAbbrevations(abbProperties,
+					metaData.getDescription()));
+			metaData.setScriptSuperNotes(replaceAbbrevations(abbProperties,
+					metaData.getScriptSuperNotes()));
+			metaData.setCommentsTelecine(replaceAbbrevations(abbProperties,
+					metaData.getCommentsTelecine()));
+			metaData.setDescription(spellChecker.doCorrection(metaData
+					.getDescription()));
+			metaData.setScriptSuperNotes(spellChecker.doCorrection(metaData
+					.getScriptSuperNotes()));
+			metaData.setCommentsTelecine(spellChecker.doCorrection(metaData
+					.getCommentsTelecine()));
 		}
 		return metaDataList;
 	}
-	
+
 	private Properties getAbbreviations() {
 		Properties prop = new Properties();
 		InputStream input = null;
@@ -187,7 +227,8 @@ public class FilesProcessService {
 		return prop;
 	}
 
-	private  String replaceAbbrevations(Properties abbrevationsList, String sentence) {
+	private String replaceAbbrevations(Properties abbrevationsList,
+			String sentence) {
 		String newsentence = "";
 		String[] words = sentence.split("\\s+"); // splits by whitespace
 		for (String wordsInLine : words) {
@@ -198,6 +239,5 @@ public class FilesProcessService {
 		}
 		return newsentence;
 	}
-	
 
 }
