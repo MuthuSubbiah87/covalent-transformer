@@ -18,13 +18,7 @@ public class SpringBootWebApplication {
 	private int maxUploadSizeInMb = 10 * 1024 * 1024; // 10 MB
 
 	public static void main(String[] args) throws Exception {
-//		SpringApplication app = new SpringApplication(
-//				SpringBootWebApplication.class);
-//		Properties prop = new Properties();
-//		prop.setProperty("spring.resources.staticLocations",
-//				"classpath:/templates/");
-//		app.setDefaultProperties(prop);
-//		app.run(args);
+
 		 SpringApplication.run(SpringBootWebApplication.class, args);
 	}
 

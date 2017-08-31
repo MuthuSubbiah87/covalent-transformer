@@ -8,12 +8,21 @@ import java.util.Properties;
 public class Test {
 
 	/*public static void main(String[] args) {
-		Test test = new Test();
-		String sampleTxt = "hsdfgh.csv";
-		sampleTxt = sampleTxt.substring(0, sampleTxt.length() - 4);
-		System.out.println(sampleTxt);
+		//Test test = new Test();
+		//String sampleTxt = "hsdfgh.csv";
+		//sampleTxt = sampleTxt.substring(0, sampleTxt.length() - 4);
+		//System.out.println(sampleTxt);
 		//System.out.println(test.replaceAbbrevations(test.getAbbreviations(), sampleTxt));
 		//test.printThemAll();
+		String dd = "V9E-6mos_";
+
+		
+
+		if(dd.trim().indexOf('_')!=-1){
+			System.out.println("Yes");
+		}else{
+			System.out.println("No");
+		}
 
 	}
 	

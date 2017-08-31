@@ -14,7 +14,7 @@ app.controller('uploadController', function($scope, $http, $location) {
 		$scope.showLoading = true;
 		$http({
 	        method : "GET",
-	        url : "http://localhost:8090/file/list"
+	        url : "/file/list"
 	    }).then(function mySuccess(response) {
 	    		$scope.filesList = response;
 	    		console.log('file upload complete');
@@ -30,7 +30,7 @@ app.controller('uploadController', function($scope, $http, $location) {
 	};
 
 	$scope.uploadFile = function() {
-		var uploadUrl = 'http://localhost:8090/upload/';
+		var uploadUrl = '/upload/';
 		var file = $scope.theFile;
 		var fd = new FormData();
 		fd.append('file', file);
@@ -46,7 +46,7 @@ app.controller('uploadController', function($scope, $http, $location) {
 			console.log('file upload complete' + response);
 			$scope.showLoading = false;
 		}, function myerror(error) {
-			alert('Request for correction successfully submitted');
+			//alert('Request for correction successfully submitted');
 			$scope.showLoading = false;
 		});
 	};

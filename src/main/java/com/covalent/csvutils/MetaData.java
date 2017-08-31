@@ -2,8 +2,11 @@ package com.covalent.csvutils;
 
 public class MetaData {
 
+	public static final String YES = "Yes";
+	public static final String NO = "No";
+	
 	private String name;
-	//private String circleTake = "No";
+	private String circleTake = NO;
 	private String fileName;
 	private String slateScene;
 	private String slateSceneCalc;
@@ -55,13 +58,13 @@ public class MetaData {
 		this.name = name;
 	}
 	
-	/*public String getCircleTake() {
+	public String getCircleTake() {
 		return circleTake;
 	}
 
 	public void setCircleTake(String circleTake) {
 		this.circleTake = circleTake;
-	}*/
+	}
 
 	public String getFileName() {
 		return fileName;

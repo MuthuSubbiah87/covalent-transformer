@@ -2,6 +2,8 @@ package com.covalent.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -64,8 +66,7 @@ public class FilesProcessService {
 			Files.write(path, bytes);
 			FileModel fileModel = new FileModel();
 			fileModel.setFileName(file.getOriginalFilename());
-			fileModel.setFileUrl(getCovalentProperty("covalent.upload.path")
-					+ file.getOriginalFilename());
+			fileModel.setFileUrl("/upload/" + fileModel.getFileName());
 			fileModel.setFixedFileStatus(CovalentConstants.FILE_UPLOADED);
 			fileModel = service.create(fileModel);
 			System.out.println("Upload Completed" + fileModel.toString());
@@ -93,11 +94,8 @@ public class FilesProcessService {
 					fixedFile.length() - 4)
 					+ getCovalentProperty("covalent.fixed.file.suffix")
 					+ ".csv");
-			fileModel
-					.setFixedFileUrl(getCovalentProperty("covalent.download.path")
-							+ fixedFile.substring(0, fixedFile.length() - 4)
-							+ getCovalentProperty("covalent.fixed.file.suffix")
-							+ ".csv");
+			System.out.println("--->" + fileModel.getFixedFileName());
+			fileModel.setFixedFileUrl("/download/" + fileModel.getFixedFileName());
 			fileModel.setFixedFileStatus(CovalentConstants.FILE_FIXED);
 			service.update(fileModel);
 			System.out.println("CSV generated Completed");
@@ -205,12 +203,17 @@ public class FilesProcessService {
 		Properties abbProperties = getIgnoreWordDictonary();
 		int i = 0;
 		for (MetaData metaData : metaDataList) {
-			metaData.setDescription(replaceAbbrevations(abbProperties,
-					metaData.getDescription()));
-			metaData.setScriptSuperNotes(replaceAbbrevations(abbProperties,
-					metaData.getScriptSuperNotes()));
-			metaData.setCommentsTelecine(replaceAbbrevations(abbProperties,
-					metaData.getCommentsTelecine()));
+			try {
+				System.out.println("Name----------------------->"+metaData.getName()+", UTF8:"+URLEncoder.encode(metaData.getName(), "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(metaData.getName().trim().indexOf("•") != -1){//"•"
+				metaData.setCircleTake(metaData.YES);
+				System.out.println("getCircleTake- YES!!");
+			}
+
 			metaData.setDescription(spellChecker.doCorrection(metaData
 					.getDescription()));
 			metaData.setScriptSuperNotes(spellChecker.doCorrection(metaData
@@ -255,19 +258,6 @@ public class FilesProcessService {
 			}
 		}
 		return prop;
-	}
-
-	private String replaceAbbrevations(Properties abbrevationsList,
-			String sentence) {
-		String newsentence = "";
-		String[] words = sentence.split("\\s+"); // splits by whitespace
-		for (String wordsInLine : words) {
-			if (abbrevationsList.containsKey(wordsInLine)) {
-				wordsInLine = (String) abbrevationsList.get(wordsInLine);
-			}
-			newsentence = newsentence + wordsInLine + " ";
-		}
-		return newsentence;
 	}
 
 }

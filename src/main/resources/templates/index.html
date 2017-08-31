@@ -55,8 +55,8 @@
 						</tr>
 						<tr ng-repeat="eachFile in filesList.data">
 							<td>{{$index}}</td>
-							<td>{{eachFile.fileUrl}}</td>
-							<td>{{eachFile.fixedFileUrl}}</td>
+							<td><a href="{{eachFile.fileUrl}}">{{eachFile.fileName}}</a></td>
+							<td><a href="{{eachFile.fixedFileUrl}}">{{eachFile.fixedFileName}}</a></td>
 							<td>{{eachFile.fixedFileStatus}}</td>
 						</tr>
 					</table>

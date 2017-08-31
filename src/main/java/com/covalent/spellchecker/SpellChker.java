@@ -72,8 +72,6 @@ public class SpellChker implements SpellCheckListener {
 		errorWordCount++;
 		boolean needTobeReplaced = false;
 
-		// event.ignoreWord(true);
-		// event.getInvalidWord();dfsdfsdfsdfsdf
 		List<Word> suggestions = event.getSuggestions();
 		String replaementCandidate = event.getInvalidWord();
 		System.out.println("MISSPELT WORD(" + errorWordCount + "):"

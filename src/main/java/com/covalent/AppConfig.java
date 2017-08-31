@@ -15,5 +15,6 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/download/**").addResourceLocations("file:"+env.getProperty("covalent.download.path"));
+        registry.addResourceHandler("/upload/**").addResourceLocations("file:"+env.getProperty("covalent.upload.path"));
     }
 }
