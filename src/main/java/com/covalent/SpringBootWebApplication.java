@@ -1,5 +1,6 @@
 package com.covalent;
 
+import java.util.Properties;
 import java.util.concurrent.Executor;
 
 import org.apache.coyote.http11.AbstractHttp11Protocol;
@@ -19,35 +20,43 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 public class SpringBootWebApplication {
 
-    private int maxUploadSizeInMb = 10 * 1024 * 1024; // 10 MB
+	private int maxUploadSizeInMb = 10 * 1024 * 1024; // 10 MB
 
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(SpringBootWebApplication.class, args);
-    }
+	public static void main(String[] args) throws Exception {
+		SpringApplication app = new SpringApplication(
+				SpringBootWebApplication.class);
+		Properties prop = new Properties();
+		prop.setProperty("spring.resources.staticLocations",
+				"classpath:/templates/");
+		app.setDefaultProperties(prop);
+		app.run(args);
+		// SpringApplication.run(SpringBootWebApplication.class, args);
+	}
 
-    //Tomcat large file upload connection reset
-    //http://www.mkyong.com/spring/spring-file-upload-and-connection-reset-issue/
-    @Bean
-    public TomcatEmbeddedServletContainerFactory tomcatEmbedded() {
+//	// Tomcat large file upload connection reset
+//	// http://www.mkyong.com/spring/spring-file-upload-and-connection-reset-issue/
+//	@Bean
+//	public TomcatEmbeddedServletContainerFactory tomcatEmbedded() {
+//
+//		TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
+//
+//		tomcat.addConnectorCustomizers((TomcatConnectorCustomizer) connector -> {
+//			if ((connector.getProtocolHandler() instanceof AbstractHttp11Protocol<?>)) {
+//				// -1 means unlimited
+//				((AbstractHttp11Protocol<?>) connector.getProtocolHandler())
+//						.setMaxSwallowSize(-1);
+//			}
+//		});
+//
+//		return tomcat;
+//
+//	}
 
-        TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
-
-        tomcat.addConnectorCustomizers((TomcatConnectorCustomizer) connector -> {
-            if ((connector.getProtocolHandler() instanceof AbstractHttp11Protocol<?>)) {
-                //-1 means unlimited
-                ((AbstractHttp11Protocol<?>) connector.getProtocolHandler()).setMaxSwallowSize(-1);
-            }
-        });
-
-        return tomcat;
-
-    }
-    
-    @Bean
+	@Bean
 	public Executor asyncExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(2);
-		executor.setMaxPoolSize(2);
+		executor.setCorePoolSize(10);
+		executor.setMaxPoolSize(10);
 		executor.setQueueCapacity(500);
 		executor.setThreadNamePrefix("GithubLookup-");
 		executor.initialize();

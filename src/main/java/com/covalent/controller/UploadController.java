@@ -33,12 +33,17 @@ public class UploadController {
 	public String index() {
 		return "upload";
 	}
-
+//	
+//	@GetMapping("/uploadStatus")
+//	public String uploadStatus() {
+//		return "uplodStatus";
+//	}
+	
 	@PostMapping("/upload")
-	public @ResponseBody String singleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) throws InterruptedException {
+	public String singleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) throws InterruptedException {
 		if (file.isEmpty()) {
 			redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-			return "redirect:/uploadStatus";
+			return "redirect:/status";
 		}
 		try {
 			CompletableFuture<Iterable<FileModel>> future = filesProcessService.processTheFile(file);
@@ -46,14 +51,14 @@ public class UploadController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return "redirect:/uploadStatus";
+		return "redirect:/status";
 	}
 	
 	@Autowired
 	private WSPusher pusher;
 	
 	private Iterable<FileModel> websocketNotify(Iterable<FileModel> filemodels) {
-		pusher.websocketNotify(filemodels);
+		//pusher.websocketNotify(filemodels);
 		return filemodels;
 	}
 

@@ -9,7 +9,7 @@ public class FileModel {
 	}
 
 	public FileModel(String id, String fileName, String fileUrl, String fixedFileName, String fixedFileUrl,
-			String fixedFileStatus) {
+			String fixedFileStatus, int rowCount) {
 		super();
 		this.id = id;
 		this.fileName = fileName;
@@ -17,6 +17,7 @@ public class FileModel {
 		this.fixedFileName = fixedFileName;
 		this.fixedFileUrl = fixedFileUrl;
 		this.fixedFileStatus = fixedFileStatus;
+		this.rowCount = rowCount;
 	}
 
 	@Id
@@ -31,6 +32,8 @@ public class FileModel {
 	private String fixedFileUrl;
 
 	private String fixedFileStatus;
+	
+	private int rowCount;
 
 	public String getId() {
 		return id;
@@ -80,14 +83,21 @@ public class FileModel {
 		this.fixedFileStatus = fixedFileStatus;
 	}
 
+	public int getRowCount() {
+		return rowCount;
+	}
+
+	public void setRowCount(int rowCount) {
+		this.rowCount = rowCount;
+	}
+
 	@Override
 	public String toString() {
-		return "Files [id=" + id + 
-				", fileName=" + fileName + 
-				", fileUrl=" + fileUrl + 
-				", fixedFileName=" + fixedFileName +
-				", fixedFileUrl=" + fixedFileUrl +
-				", fixedFileStatus=" + fixedFileStatus 
-				+ "]";
+		return "FileModel [id=" + id + ", fileName=" + fileName + ", fileUrl="
+				+ fileUrl + ", fixedFileName=" + fixedFileName
+				+ ", fixedFileUrl=" + fixedFileUrl + ", fixedFileStatus="
+				+ fixedFileStatus + ", rowCount=" + rowCount + "]";
 	}
+
+	
 }

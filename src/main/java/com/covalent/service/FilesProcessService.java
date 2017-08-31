@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.covalent.common.CovalentConstants;
@@ -41,13 +42,15 @@ public class FilesProcessService {
 
 	@Async
 	public CompletableFuture<Iterable<FileModel>> processTheFile(
-			MultipartFile file) throws InterruptedException, IOException {
+			@RequestParam("file") MultipartFile file)
+			throws InterruptedException, IOException {
 		System.out.println("processTheFile Looking up users .... ");
 		// Artificial delay of 1s for demonstration purposes
 		return CompletableFuture.completedFuture(processFile(file));
 	}
 
-	private List<FileModel> processFile(MultipartFile file) throws IOException {
+	private List<FileModel> processFile(@RequestParam("file") MultipartFile file)
+			throws IOException {
 		List<FileModel> fileList = null;
 		try {
 			/** Uploading File **/
@@ -70,12 +73,14 @@ public class FilesProcessService {
 			/** Parsing File **/
 			List<MetaData> metaDataList = parseCSVFile(file
 					.getOriginalFilename());
+			fileModel.setRowCount(metaDataList.size());
 			fileModel.setFixedFileStatus(CovalentConstants.FILE_PARSED);
 			service.update(fileModel);
 			System.out.println("Parsing Completed");
 
 			/** Transforming File **/
-			List<MetaData> transFormedMetaDataList = transformData(metaDataList);
+			List<MetaData> transFormedMetaDataList = transformData(
+					metaDataList, fileModel, service);
 			fileModel.setFixedFileStatus(CovalentConstants.FILE_TRANSFORMED);
 			service.update(fileModel);
 			System.out.println("Data transformation Completed");
@@ -182,10 +187,13 @@ public class FilesProcessService {
 		return metaDataList;
 	}
 
-	private List<MetaData> transformData(List<MetaData> metaDataList) {
+	private List<MetaData> transformData(List<MetaData> metaDataList,
+			FileModel fileModel, CovalentService service2) {
 		SpellChker spellChecker = new SpellChker(
-				getCovalentProperty("covalent.standard.dict.path"));
-		Properties abbProperties = getAbbreviations();
+				getCovalentProperty("covalent.standard.dict.path"),
+				getIgnoreWordDictonary(), getCustomDictonary());
+		Properties abbProperties = getIgnoreWordDictonary();
+		int i = 0;
 		for (MetaData metaData : metaDataList) {
 			metaData.setDescription(replaceAbbrevations(abbProperties,
 					metaData.getDescription()));
@@ -199,15 +207,24 @@ public class FilesProcessService {
 					.getScriptSuperNotes()));
 			metaData.setCommentsTelecine(spellChecker.doCorrection(metaData
 					.getCommentsTelecine()));
+			String msg = "Processed: " + i++ + "/" + fileModel.getRowCount();
+			System.out.println(msg);
+			fileModel.setFixedFileStatus(msg);
+			service.update(fileModel);
 		}
 		return metaDataList;
 	}
 
-	private Properties getAbbreviations() {
+	private Properties getIgnoreWordDictonary() {
+		return loadPropery("ignore.properties");
+	}
+	private Properties getCustomDictonary() {
+		return loadPropery("replace.properties");
+	}
+	private Properties loadPropery(String filename) {
 		Properties prop = new Properties();
 		InputStream input = null;
 		try {
-			String filename = "abbreviation.properties";
 			input = getClass().getClassLoader().getResourceAsStream(filename);
 			if (input == null) {
 				System.out.println("Sorry, unable to find " + filename);
