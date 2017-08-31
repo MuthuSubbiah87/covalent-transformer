@@ -47,19 +47,17 @@ public class UploadController {
 		}
 		try {
 			CompletableFuture<Iterable<FileModel>> future = filesProcessService.processTheFile(file);
-			future.thenApply(this::websocketNotify);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return "redirect:/status";
 	}
-	
-	@Autowired
-	private WSPusher pusher;
-	
-	private Iterable<FileModel> websocketNotify(Iterable<FileModel> filemodels) {
-		//pusher.websocketNotify(filemodels);
-		return filemodels;
-	}
+//	
+//	@Autowired
+//	private WSPusher pusher;
+//	
+//	private void websocketNotify() {
+//		pusher.websocketNotify(100);
+//	}
 
 }

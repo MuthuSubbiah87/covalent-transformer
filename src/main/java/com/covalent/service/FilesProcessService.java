@@ -187,6 +187,9 @@ public class FilesProcessService {
 		return metaDataList;
 	}
 
+	@Autowired
+	private WSPusher pusher;
+
 	private List<MetaData> transformData(List<MetaData> metaDataList,
 			FileModel fileModel, CovalentService service2) {
 		SpellChker spellChecker = new SpellChker(
@@ -208,6 +211,7 @@ public class FilesProcessService {
 			metaData.setCommentsTelecine(spellChecker.doCorrection(metaData
 					.getCommentsTelecine()));
 			String msg = "Processed: " + i++ + "/" + fileModel.getRowCount();
+			pusher.websocketNotify(msg);
 			System.out.println(msg);
 			fileModel.setFixedFileStatus(msg);
 			service.update(fileModel);
@@ -218,9 +222,11 @@ public class FilesProcessService {
 	private Properties getIgnoreWordDictonary() {
 		return loadPropery("ignore.properties");
 	}
+
 	private Properties getCustomDictonary() {
 		return loadPropery("replace.properties");
 	}
+
 	private Properties loadPropery(String filename) {
 		Properties prop = new Properties();
 		InputStream input = null;
