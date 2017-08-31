@@ -121,9 +121,16 @@ public class FilesProcessService {
 			t.printStackTrace();
 		}
 
+
 		return fileList;
 
 	}
+
+	public List<FileModel> getAllFilesList(){
+		List<FileModel> fileList = service.findAll();
+		return fileList;
+	}
+	
 
 	private String getCovalentProperty(String property) {
 		Properties prop = new Properties();

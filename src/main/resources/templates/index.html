@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<title>Covalent Transformer</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.0/angular.min.js"></script>
+<script src="/js/controller.js"></script>
+<link rel="stylesheet"
+	href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/css/covalent.css" />
+</head>
+<body>
+
+	<div class="container-fluid" ng-app="app">
+		<div ng-controller="uploadController">
+
+			<div class="loading-bar" ng-if="showLoading"></div>
+			<div class="jumbotron">
+				<center>
+					<h1>Covalent File Transformer</h1>
+					<p>Automated Metadata Correction Tool</p>
+				</center>
+			</div>
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12 col-lg-12">
+					<table align="center">
+						<tr>
+
+							<td><input class=".btn-primary" type="file"
+								onchange="angular.element(this).scope().setFile(this)" /></td>
+							<td><input class=".btn-success" type="button" value="Upload"
+								ng-click="uploadFile()" /></td>
+							<td><input class=".btn-success" type="button"
+								value="Refresh List" ng-click="refreshList()" /></td>
+						</tr>
+						<tr>
+						<td>
+							&nbsp;</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-xs-12 col-lg-12">
+					<table class="table table-striped">
+						<tr>
+							<th>#</th>
+							<th>Input File URL</th>
+							<th>Output File URL</th>
+							<th>Status</th>
+						</tr>
+						<tr ng-repeat="eachFile in filesList.data">
+							<td>{{$index}}</td>
+							<td>{{eachFile.fileUrl}}</td>
+							<td>{{eachFile.fixedFileUrl}}</td>
+							<td>{{eachFile.fixedFileStatus}}</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
