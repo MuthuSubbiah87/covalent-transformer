@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.covalent.common.CovalentConstants;
@@ -37,15 +38,17 @@ public class FilesProcessService {
 	FilesProcessService(CovalentService service) {
 		this.service = service;
 	}
+	
 	@Async
-	public CompletableFuture<Iterable<FileModel>> processTheFile(MultipartFile file) throws InterruptedException, IOException {
-		logger.info("Looking up users .... ");
+	public CompletableFuture<Iterable<FileModel>> processTheFile(@RequestParam("file") MultipartFile file) throws InterruptedException, IOException {
+		System.out.println("Looking up users .... ");
 		// Artificial delay of 1s for demonstration purposes
-		Thread.sleep(1000L);
+		//Thread.sleep(1000L);
 		return CompletableFuture.completedFuture(processFile(file));
 	}
 	
-	private List<FileModel> processFile(MultipartFile file) throws IOException {
+	private List<FileModel> processFile(@RequestParam("file") MultipartFile file) throws IOException {
+		System.out.println("Thread:" + Thread.currentThread());
 		/** Uploading File **/
 		byte[] bytes = file.getBytes();
 		Path path = Paths.get(getCovalentProperty("covalent.upload.path") + file.getOriginalFilename());
@@ -93,6 +96,11 @@ public class FilesProcessService {
 		
 		return fileList;
 		
+	}
+	
+	public List<FileModel> getAllFilesList(){
+		List<FileModel> fileList = service.findAll();
+		return fileList;
 	}
 	
 	private String getCovalentProperty(String property) {
