@@ -16,40 +16,46 @@
 
 	<div class="container-fluid" ng-app="app">
 		<div ng-controller="uploadController">
-			
+
 			<div class="loading-bar" ng-if="showLoading"></div>
 			<div class="jumbotron">
 				<center>
 					<h1>Covalent File Transformer</h1>
-					<p>Automated Metadata Tool</p>
+					<p>Automated Metadata Correction Tool</p>
 				</center>
 			</div>
 			<div class="row">
 				<div class="col-sm-12 col-md-12 col-xs-12 col-lg-12">
-					<center>
-						<input class=".btn-primary" type="file"
-							onchange="angular.element(this).scope().setFile(this)" /> <input
-							class=".btn-success" type="button" value="upload"
-							ng-click="uploadFile()" />
-					</center>
+					<table align="center">
+						<tr>
+
+							<td><input class=".btn-primary" type="file"
+								onchange="angular.element(this).scope().setFile(this)" /></td>
+							<td><input class=".btn-success" type="button" value="Upload"
+								ng-click="uploadFile()" /></td>
+							<td><input class=".btn-success" type="button"
+								value="Refresh List" ng-click="refreshList()" /></td>
+						</tr>
+						<tr>
+						<td>
+							&nbsp;</td>
+						</tr>
+					</table>
 				</div>
 			</div>
+
 			<div class="row">
 				<div class="col-sm-12 col-md-12 col-xs-12 col-lg-12">
 					<table class="table table-striped">
 						<tr>
 							<th>#</th>
-							<th>Input File</th>
 							<th>Input File URL</th>
-							<th>Output File</th>
 							<th>Output File URL</th>
 							<th>Status</th>
 						</tr>
 						<tr ng-repeat="eachFile in filesList.data">
 							<td>{{$index}}</td>
-							<td>{{eachFile.fileName}}</td>
 							<td>{{eachFile.fileUrl}}</td>
-							<td>{{eachFile.fixedFileName}}</td>
 							<td>{{eachFile.fixedFileUrl}}</td>
 							<td>{{eachFile.fixedFileStatus}}</td>
 						</tr>

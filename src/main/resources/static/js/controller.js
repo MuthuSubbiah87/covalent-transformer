@@ -6,6 +6,10 @@ app.controller('uploadController', function($scope, $http, $location) {
 	
 	getFilesList();
 	
+	$scope.refreshList =  function() {
+		getFilesList();
+	};
+	
 	function getFilesList() {
 		$scope.showLoading = true;
 		$http({
@@ -38,11 +42,11 @@ app.controller('uploadController', function($scope, $http, $location) {
 			headers : {
 				'Content-Type' : undefined
 			}
-		}).success(function() {
-			console.log('file upload complete');
+		}).then(function mySuccess(response) {
+			console.log('file upload complete' + response);
 			$scope.showLoading = false;
-		}).error(function() {
-			console.log('file upload error');
+		}, function myerror(error) {
+			alert('Request for correction successfully submitted');
 			$scope.showLoading = false;
 		});
 	};
