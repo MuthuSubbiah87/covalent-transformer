@@ -200,7 +200,7 @@ public class FilesProcessService {
 		SpellChker spellChecker = new SpellChker(
 				getCovalentProperty("covalent.standard.dict.path"),
 				getIgnoreWordDictonary(), getCustomDictonary());
-		Properties abbProperties = getIgnoreWordDictonary();
+		Properties abbProperties = getCustomDictonary();
 		int i = 0;
 		for (MetaData metaData : metaDataList) {
 			try {
@@ -209,10 +209,16 @@ public class FilesProcessService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(metaData.getName().trim().indexOf("•") != -1){//"•"
+			if(metaData.getName().trim().indexOf("*") != -1){//"•"
 				metaData.setCircleTake(metaData.YES);
-				System.out.println("getCircleTake- YES!!");
+				metaData.setName(metaData.getName().substring(0,metaData.getName().length() - 1));
+				
+				System.out.println("getCircleTake- YES!! --> replaced name" + metaData.getName().substring(0,metaData.getName().length() - 2));
 			}
+			
+			metaData.setDescription(replaceAbbrevations(abbProperties,metaData.getDescription()));
+			metaData.setScriptSuperNotes(replaceAbbrevations(abbProperties,metaData.getScriptSuperNotes()));
+			metaData.setCommentsTelecine(replaceAbbrevations(abbProperties,metaData.getCommentsTelecine()));
 
 			metaData.setDescription(spellChecker.doCorrection(metaData
 					.getDescription()));
@@ -227,6 +233,18 @@ public class FilesProcessService {
 			service.update(fileModel);
 		}
 		return metaDataList;
+	}
+	
+	private String replaceAbbrevations(Properties abbrevationsList,String sentence) {
+		String newsentence = "";
+		String[] words = sentence.split("\\s+"); // splits by whitespace
+		for (String wordsInLine : words) {
+			if (abbrevationsList.containsKey(wordsInLine)) {
+				wordsInLine = (String) abbrevationsList.get(wordsInLine);
+			}
+			newsentence = newsentence + wordsInLine + " ";
+		}
+		return newsentence;
 	}
 
 	private Properties getIgnoreWordDictonary() {
