@@ -4,6 +4,7 @@ package com.covalent;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
+import org.apache.log4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -14,8 +15,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @SpringBootApplication
 @EnableAsync
 public class SpringBootWebApplication {
-
-	private int maxUploadSizeInMb = 10 * 1024 * 1024; // 10 MB
+	
+	final static Logger logger = Logger.getLogger(SpringBootWebApplication.class);
 
 	public static void main(String[] args) throws Exception {
 
@@ -30,7 +31,7 @@ public class SpringBootWebApplication {
  		executor.setQueueCapacity(500);
  		executor.setThreadNamePrefix("AsynFileProcessThread");
  		executor.initialize();
- 		System.out.println("AsynFileProcessThread Init");
+ 		logger.debug("AsynFileProcessThread Initialized");
  		return executor;
  	}
 

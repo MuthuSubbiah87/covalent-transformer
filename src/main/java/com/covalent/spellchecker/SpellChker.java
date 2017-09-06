@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
+import com.covalent.service.FilesProcessService;
 import com.swabunga.spell.engine.Word;
 import com.swabunga.spell.event.SpellCheckEvent;
 import com.swabunga.spell.event.SpellCheckListener;
@@ -19,6 +22,8 @@ import com.swabunga.spell.event.TeXWordFinder;
 
 public class SpellChker implements SpellCheckListener {
 
+	final static Logger logger = Logger.getLogger(SpellChker.class);
+	
 	private SpellChecker spellChecker;
 	private List<String> misspelledWords = new ArrayList<String>();;
 
@@ -61,8 +66,8 @@ public class SpellChker implements SpellCheckListener {
 				new TeXWordFinder());
 		spellChecker.checkSpelling(strTokenizer);
 
-		System.out.println("original:" + inputString);
-		System.out.println("corrected:" + correctedString);
+		logger.info("Input word for correction:" + inputString);
+		logger.info("Corrected word:" + correctedString);
 
 		return correctedString;
 	}
@@ -74,24 +79,23 @@ public class SpellChker implements SpellCheckListener {
 
 		List<Word> suggestions = event.getSuggestions();
 		String replaementCandidate = event.getInvalidWord();
-		System.out.println("MISSPELT WORD(" + errorWordCount + "):"
+		logger.info("MISSPELT WORD(" + errorWordCount + "):"
 				+ event.getInvalidWord());
 		if (isInIgnoreWordDictonary(event.getInvalidWord())) {
-			System.out.println("Ignoring:" + event.getInvalidWord());
+			logger.info("Ignoring:" + event.getInvalidWord());
 		} else if (isInCustomDictonary(event.getInvalidWord())) {
 			replaementCandidate = getCustomDictoaryReplaement(event
 					.getInvalidWord());
-			System.out.println("custum replacemet:" + replaementCandidate);
+			logger.info("custom replacement:" + replaementCandidate);
 			needTobeReplaced = true;
 		} else {
 
 			if (suggestions.size() > 0) {
 				replaementCandidate = suggestions.get(0).toString();
-				System.out
-						.println("replaementCandidate:" + replaementCandidate);
+				logger.info("replacementCandidate:" + replaementCandidate);
 				needTobeReplaced = true;
 			} else {
-				System.out.println("\tNo suggestions");
+				logger.info("\tNo suggestions");
 			}
 		}
 		if (needTobeReplaced)

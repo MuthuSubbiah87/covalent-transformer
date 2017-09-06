@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -31,8 +30,7 @@ import com.opencsv.bean.CsvToBean;
 @Service
 public class FilesProcessService {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(FilesProcessService.class);
+	final static Logger logger = Logger.getLogger(FilesProcessService.class);
 
 	@Autowired
 	private final CovalentService service;
@@ -46,7 +44,7 @@ public class FilesProcessService {
 	public CompletableFuture<Iterable<FileModel>> processTheFile(
 			@RequestParam("file") MultipartFile file)
 			throws InterruptedException, IOException {
-		System.out.println("processTheFile Looking up users .... ");
+		logger.info("Got file to process");
 		// Artificial delay of 1s for demonstration purposes
 		return CompletableFuture.completedFuture(processFile(file));
 	}
@@ -56,11 +54,10 @@ public class FilesProcessService {
 		List<FileModel> fileList = null;
 		try {
 			/** Uploading File **/
-			System.out.println("processFile");
+			logger.debug("Inside process method");
 
 			byte[] bytes = file.getBytes();
-			System.out.println(" after file.getBytes()");
-			System.out.println(Thread.currentThread());
+			logger.debug("Current Thread Name: " + Thread.currentThread());
 			Path path = Paths.get(getCovalentProperty("covalent.upload.path")
 					+ file.getOriginalFilename());
 			Files.write(path, bytes);
@@ -69,7 +66,7 @@ public class FilesProcessService {
 			fileModel.setFileUrl("/upload/" + fileModel.getFileName());
 			fileModel.setFixedFileStatus(CovalentConstants.FILE_UPLOADED);
 			fileModel = service.create(fileModel);
-			System.out.println("Upload Completed" + fileModel.toString());
+			logger.info("Upload Completed" + fileModel.toString());
 
 			/** Parsing File **/
 			List<MetaData> metaDataList = parseCSVFile(file
@@ -77,14 +74,14 @@ public class FilesProcessService {
 			fileModel.setRowCount(metaDataList.size());
 			fileModel.setFixedFileStatus(CovalentConstants.FILE_PARSED);
 			service.update(fileModel);
-			System.out.println("Parsing Completed");
+			logger.info("Parsing Completed");
 
 			/** Transforming File **/
 			List<MetaData> transFormedMetaDataList = transformData(
 					metaDataList, fileModel, service);
 			fileModel.setFixedFileStatus(CovalentConstants.FILE_TRANSFORMED);
 			service.update(fileModel);
-			System.out.println("Data transformation Completed");
+			logger.info("Data transformation Completed");
 
 			/** Writing File **/
 			writeTransformedData(file.getOriginalFilename(),
@@ -94,14 +91,14 @@ public class FilesProcessService {
 					fixedFile.length() - 4)
 					+ getCovalentProperty("covalent.fixed.file.suffix")
 					+ ".csv");
-			System.out.println("--->" + fileModel.getFixedFileName());
+			logger.debug("Fixed file name: " + fileModel.getFixedFileName());
 			fileModel.setFixedFileUrl("/download/" + fileModel.getFixedFileName());
 			fileModel.setFixedFileStatus(CovalentConstants.FILE_FIXED);
 			service.update(fileModel);
-			System.out.println("CSV generated Completed");
+			logger.info("CSV generated Completed");
 
 			fileList = service.findAll();
-			System.out.println("Fetched all records");
+			logger.info("Fetched all records");
 
 			/** Response **/
 			/*
@@ -137,7 +134,7 @@ public class FilesProcessService {
 			String filename = "covalent.properties";
 			input = getClass().getClassLoader().getResourceAsStream(filename);
 			if (input == null) {
-				System.out.println("Sorry, unable to find " + filename);
+				logger.info("Sorry, unable to find " + filename);
 			}
 			prop.load(input);
 		} catch (IOException ex) {
@@ -204,14 +201,15 @@ public class FilesProcessService {
 		int i = 0;
 		for (MetaData metaData : metaDataList) {
 			try {
-				System.out.println("Name----------------------->"+metaData.getName()+", UTF8:"+URLEncoder.encode(metaData.getName(), "UTF-8"));
+				logger.info("-----------------------------------Spell Check Process Row " + i +"-----------------------------------");
+				logger.info("Covalent Name input: "+metaData.getName()+", UTF8:"+URLEncoder.encode(metaData.getName(), "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			if(metaData.getName().trim().indexOf("•") != -1){//"•"
 				metaData.setCircleTake(metaData.YES);
-				System.out.println("getCircleTake- YES!!");
+				logger.info("Invalid dot character present in Name field");
 			}
 
 			metaData.setDescription(spellChecker.doCorrection(metaData
@@ -243,7 +241,7 @@ public class FilesProcessService {
 		try {
 			input = getClass().getClassLoader().getResourceAsStream(filename);
 			if (input == null) {
-				System.out.println("Sorry, unable to find " + filename);
+				logger.info("Sorry, unable to find " + filename);
 			}
 			prop.load(input);
 		} catch (IOException ex) {
