@@ -34,6 +34,8 @@ public class FilesProcessService {
 
 	@Autowired
 	private final CovalentService service;
+	
+	private Properties covalentProperties;
 
 	@Autowired
 	FilesProcessService(CovalentService service) {
@@ -58,7 +60,8 @@ public class FilesProcessService {
 
 			byte[] bytes = file.getBytes();
 			logger.debug("Current Thread Name: " + Thread.currentThread());
-			Path path = Paths.get(getCovalentProperty("covalent.upload.path")
+			covalentProperties = getCovalentProperty();
+			Path path = Paths.get(covalentProperties.getProperty("covalent.upload.path")
 					+ file.getOriginalFilename());
 			Files.write(path, bytes);
 			FileModel fileModel = new FileModel();
@@ -89,7 +92,7 @@ public class FilesProcessService {
 			String fixedFile = file.getOriginalFilename();
 			fileModel.setFixedFileName(fixedFile.substring(0,
 					fixedFile.length() - 4)
-					+ getCovalentProperty("covalent.fixed.file.suffix")
+					+ covalentProperties.getProperty("covalent.fixed.file.suffix")
 					+ ".csv");
 			logger.debug("Fixed file name: " + fileModel.getFixedFileName());
 			fileModel.setFixedFileUrl("/download/" + fileModel.getFixedFileName());
@@ -125,43 +128,18 @@ public class FilesProcessService {
 		List<FileModel> fileList = service.findAll();
 		return fileList;
 	}
-	
-
-	private String getCovalentProperty(String property) {
-		Properties prop = new Properties();
-		InputStream input = null;
-		try {
-			String filename = "covalent.properties";
-			input = getClass().getClassLoader().getResourceAsStream(filename);
-			if (input == null) {
-				logger.info("Sorry, unable to find " + filename);
-			}
-			prop.load(input);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} finally {
-			if (input != null) {
-				try {
-					input.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return prop.getProperty(property);
-	}
 
 	private void writeTransformedData(String fileName,
 			List<MetaData> metaDataList) {
 		CsvUtil csvUtil = new CsvUtil();
 		fileName = fileName.substring(0, fileName.length() - 4)
-				+ getCovalentProperty("covalent.fixed.file.suffix") + ".csv";
+				+ covalentProperties.getProperty("covalent.fixed.file.suffix") + ".csv";
 		CSVWriter csvWriter = csvUtil
-				.getCSVWriter(getCovalentProperty("covalent.download.path")
+				.getCSVWriter(covalentProperties.getProperty("covalent.download.path")
 						+ fileName);
 		List<String[]> data = CsvUtil.toStringArray(metaDataList);
 		System.out.println(data);
-		System.out.println(getCovalentProperty("covalent.download.path")
+		System.out.println(covalentProperties.getProperty("covalent.download.path")
 				+ fileName);
 		csvWriter.writeAll(data);
 		try {
@@ -176,7 +154,7 @@ public class FilesProcessService {
 		CsvUtil csvUtil = new CsvUtil();
 		CsvToBean<MetaData> csvToBean = new CsvToBean<MetaData>();
 		CSVReader coavlentCsvReader = csvUtil
-				.getCSVReader(getCovalentProperty("covalent.upload.path")
+				.getCSVReader(covalentProperties.getProperty("covalent.upload.path")
 						+ fileName);
 		List<MetaData> metaDataList = csvToBean.parse(
 				csvUtil.getColumnStrategy(), coavlentCsvReader);
@@ -195,7 +173,7 @@ public class FilesProcessService {
 	private List<MetaData> transformData(List<MetaData> metaDataList,
 			FileModel fileModel, CovalentService service2) {
 		SpellChker spellChecker = new SpellChker(
-				getCovalentProperty("covalent.standard.dict.path"),
+				covalentProperties.getProperty("covalent.standard.dict.path"),
 				getIgnoreWordDictonary(), getCustomDictonary());
 		Properties abbProperties = getIgnoreWordDictonary();
 		int i = 0;
@@ -233,6 +211,10 @@ public class FilesProcessService {
 
 	private Properties getCustomDictonary() {
 		return loadPropery("replace.properties");
+	}
+	
+	private Properties getCovalentProperty() {
+		return loadPropery("covalent.properties");
 	}
 
 	private Properties loadPropery(String filename) {
