@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.covalent.models.CovalentConfig;
 import com.covalent.models.FileModel;
 import com.covalent.service.CovalentService;
 
@@ -24,10 +25,21 @@ public class RestWebController {
 	RestWebController(CovalentService service) {
 		this.service = service;
 	} 
+	
 	@RequestMapping(value = "/file/list", method = RequestMethod.GET)
 	public List<FileModel> getResource(){
 		List<FileModel> filesList = service.findAll();
 		return filesList;
-	}	
+	}
+	
+	@RequestMapping(value = "/config/update", method = RequestMethod.POST)
+	public String updateConfig(){
+		return service.updateCovalentProperties();
+	}
+	
+	@RequestMapping(value = "/config/list", method = RequestMethod.GET)
+	public CovalentConfig getConfig(){
+		return service.getCovalentConfig();
+	}
 	
 }

@@ -2,6 +2,7 @@ package com.covalent.service;
 
 import java.util.List;
 
+import com.covalent.models.CovalentConfig;
 import com.covalent.models.FileModel;
 
 /**
@@ -47,4 +48,8 @@ public interface CovalentService {
      * @throws com.javaadvent.bootrest.todo.TodoNotFoundException if no user entry is found.
      */
     FileModel update(FileModel user);
+
+	String updateCovalentProperties();
+
+	CovalentConfig getCovalentConfig();
 }

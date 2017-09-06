@@ -25,6 +25,36 @@ app.controller('uploadController', function($scope, $http, $location) {
 	    });
 	};
 	
+	$scope.updateConfig =  function() {
+		$scope.showLoading = true;
+		$http({
+	        method : "POST",
+	        url : "/config/update"
+	    }).then(function mySuccess(response) {
+	    		$scope.updateConfigResponse = response;
+	    		console.log('config update success');
+	    		$scope.showLoading = false;
+	    }, function myError(response) {
+	    		console.log('config update failed');
+	    		$scope.showLoading = false;
+	    });
+	};
+	
+	function getConfigList() {
+		$scope.showLoading = true;
+		$http({
+	        method : "GET",
+	        url : "/config/list"
+	    }).then(function mySuccess(response) {
+	    		$scope.getConfigResponse = response;
+	    		console.log('file upload complete');
+	    		$scope.showLoading = false;
+	    }, function myError(response) {
+	    		console.log('file upload error');
+	    		$scope.showLoading = false;
+	    });
+	};
+	
 	$scope.setFile = function(element) {
 			$scope.theFile = element.files[0];
 	};

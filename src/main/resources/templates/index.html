@@ -35,10 +35,18 @@
 								ng-click="uploadFile()" /></td>
 							<td><input class=".btn-success" type="button"
 								value="Refresh List" ng-click="refreshList()" /></td>
+								<td><input class=".btn-success" type="button"
+								value="Update Config" ng-click="updateConfig()" /></td>
+								<td><input class=".btn-success" type="button"
+								value="Get Config" ng-click="getConfig()" /></td>
 						</tr>
 						<tr>
 						<td>
 							&nbsp;</td>
+						</tr>
+						<tr>
+						<td>{{ getConfigResponse }} {{ updateConfigResponse }}
+							</td>
 						</tr>
 					</table>
 				</div>
