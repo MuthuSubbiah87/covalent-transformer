@@ -1,5 +1,6 @@
 package com.covalent.service;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -219,9 +220,11 @@ public class FilesProcessService {
 
 	private Properties loadPropery(String filename) {
 		Properties prop = new Properties();
-		InputStream input = null;
+		//InputStream input = null;
+		FileInputStream input = null;
 		try {
-			input = getClass().getClassLoader().getResourceAsStream(filename);
+			//input = getClass().getClassLoader().getResourceAsStream(filename);
+			input = new FileInputStream("c:\\data\\input-text.txt");
 			if (input == null) {
 				logger.info("Sorry, unable to find " + filename);
 			}
