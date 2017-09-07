@@ -185,8 +185,9 @@ public class FilesProcessService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(metaData.getName().trim().indexOf("•") != -1){//"•"
+			if(metaData.getName().trim().indexOf("*") != -1){//"•"
 				metaData.setCircleTake(metaData.YES);
+				metaData.setName(metaData.getName().substring(0,metaData.getName().length() - 1));
 				logger.info("Invalid dot character present in Name field");
 			}
 
