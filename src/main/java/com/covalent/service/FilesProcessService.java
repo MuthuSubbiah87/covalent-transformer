@@ -1,5 +1,7 @@
 package com.covalent.service;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -207,18 +209,18 @@ public class FilesProcessService {
 	}
 
 	private Properties getIgnoreWordDictonary() {
-		return loadPropery("ignore.properties");
+		return loadProperyOut("ignore.properties");
 	}
 
 	private Properties getCustomDictonary() {
-		return loadPropery("replace.properties");
+		return loadProperyOut("replace.properties");
 	}
 	
 	private Properties getCovalentProperty() {
-		return loadPropery("covalent.properties");
+		return loadProperyOut("covalent.properties");
 	}
 
-	private Properties loadPropery(String filename) {
+	/*private Properties loadPropery(String filename) {
 		Properties prop = new Properties();
 		InputStream input = null;
 		try {
@@ -238,6 +240,21 @@ public class FilesProcessService {
 				}
 			}
 		}
+		return prop;
+	}*/
+	
+	private Properties loadProperyOut(String filename) {
+		Properties prop = new Properties();
+	    try {
+	        File jarPath=new File(FilesProcessService.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+	        String propertiesPath = jarPath.getPath().substring(0,jarPath.getPath().length() - 47);
+	        String finalPath = propertiesPath.substring(5, propertiesPath.length());
+	        File prp = new File(finalPath + filename);
+	        System.out.println(" propertiesPath-" + finalPath + filename);
+	        prop.load(new FileInputStream(prp));
+	    } catch (IOException e1) {
+	        e1.printStackTrace();
+	    }
 		return prop;
 	}
 
