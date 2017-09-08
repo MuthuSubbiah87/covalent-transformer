@@ -58,18 +58,37 @@ public class SpellChker implements SpellCheckListener {
 
 	// Method to do Correction on Misspelled Words for the given Line
 	public String doCorrection(String line) {
-		inputString = line;
-		correctedString = line;
-		errorWordCount = 0;
-
-		StringWordTokenizer strTokenizer = new StringWordTokenizer(line,
+		String ignoreAndreplaceLine = replaceAbbrevations(line);
+		StringWordTokenizer strTokenizer = new StringWordTokenizer(ignoreAndreplaceLine,
 				new TeXWordFinder());
+		inputString = ignoreAndreplaceLine;
+		correctedString = ignoreAndreplaceLine;
+		errorWordCount = 0;
+		
 		spellChecker.checkSpelling(strTokenizer);
-
-		logger.info("Input word for correction:" + inputString);
-		logger.info("Corrected word:" + correctedString);
-
+		//logger.info("Input sentence before standard correction:" + inputString);
+		//logger.info("Ouput sentence before standard correction:" + correctedString);
 		return correctedString;
+	}
+	
+	private  String replaceAbbrevations(String sentence) {
+		String newsentence = "";
+		logger.info("Input sentence before ignore or replace: " + sentence);
+		String[] words = sentence.split("\\s+"); // splits by whitespace
+		for (String eachWord : words) {
+			if (isInIgnoreWordDictonary(eachWord)) {
+				logger.info("Ignoring word: " + eachWord);
+			} else {
+				if(isInCustomDictonary(eachWord)) {
+					//logger.info("Before standard custom dic check input word: " + eachWord);
+					eachWord = (String) getCustomDictoaryReplaement(eachWord);
+					//logger.info("Before standard custom dic check output word: " + eachWord);
+				}
+			}
+			newsentence = newsentence + eachWord + " ";
+		}
+		logger.info("Output sentence after ignore or replace:" + newsentence);
+		return newsentence;
 	}
 
 	@Override
@@ -79,14 +98,14 @@ public class SpellChker implements SpellCheckListener {
 
 		List<Word> suggestions = event.getSuggestions();
 		String replaementCandidate = event.getInvalidWord();
-		logger.info("MISSPELT WORD(" + errorWordCount + "):"
+		logger.info("Missplled word from standard dictionary (" + errorWordCount + "):"
 				+ event.getInvalidWord());
 		if (isInIgnoreWordDictonary(event.getInvalidWord())) {
-			logger.info("Ignoring:" + event.getInvalidWord());
+			logger.info("After standard check ignoring:" + event.getInvalidWord());
 		} else if (isInCustomDictonary(event.getInvalidWord())) {
 			replaementCandidate = getCustomDictoaryReplaement(event
 					.getInvalidWord());
-			logger.info("custom replacement:" + replaementCandidate);
+			logger.info("After standard check custom replacement:" + replaementCandidate);
 			needTobeReplaced = true;
 		} else {
 
