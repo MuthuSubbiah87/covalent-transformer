@@ -14,6 +14,7 @@ import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -200,7 +201,11 @@ public class FilesProcessService {
 			metaData.setCommentsTelecine(spellChecker.doCorrection(metaData
 					.getCommentsTelecine()));
 			String msg = "Processed: " + i++ + "/" + fileModel.getRowCount();
-			pusher.websocketNotify(msg);
+			
+			JSONObject obj = new JSONObject();
+	        obj.put("processed",  new Integer(i));
+	        obj.put("total", new Integer(fileModel.getRowCount()));
+	        pusher.websocketNotify(obj.toJSONString());
 			System.out.println(msg);
 			fileModel.setFixedFileStatus(msg);
 			service.update(fileModel);

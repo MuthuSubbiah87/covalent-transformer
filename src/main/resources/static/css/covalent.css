@@ -12,3 +12,14 @@
   position: fixed;
   background-color: rgba(0, 0, 0, 0.6);
 }
+
+.align-center {
+	text-align: center;
+}
+
+.element-center {
+position:absolute;
+  left:50%;
+  transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+}
