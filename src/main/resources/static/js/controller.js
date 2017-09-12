@@ -13,7 +13,7 @@ app.controller('uploadController', function($scope, $http, $location) {
 	connect();
 	
 	$scope.refreshList =  function() {
-		$scope.showSuccess = false;
+		//$scope.showSuccess = false;
 		getFilesList();
 	};
 	

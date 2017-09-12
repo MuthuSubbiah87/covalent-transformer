@@ -183,11 +183,13 @@ public class FilesProcessService {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(metaData.getName().trim().indexOf("*") != -1){//"•"
+			if(metaData.getName().contains("•")){ //"•"
 				metaData.setCircleTake(metaData.YES);
-				metaData.setName(metaData.getName().substring(0,metaData.getName().length() - 1));
+				//metaData.setName(metaData.getName().substring(0,metaData.getName().length() - 1));
 				logger.info("Invalid dot character present in Name field");
 			}
+			
+			metaData.setName(metaData.getName() != null? removeInvalidChar(metaData.getName()):"");
 
 			metaData.setDescription(spellChecker.doCorrection(metaData
 					.getDescription()));
@@ -195,6 +197,9 @@ public class FilesProcessService {
 					.getScriptSuperNotes()));
 			metaData.setCommentsTelecine(spellChecker.doCorrection(metaData
 					.getCommentsTelecine()));
+			
+			
+			metaData.setVfxSetId(metaData.getVfxSetId() != null? removeInvalidChar(metaData.getVfxSetId()):"");
 			String msg = "Processed: " + i++ + "/" + fileModel.getRowCount();
 			
 			JSONObject obj = new JSONObject();
@@ -207,6 +212,15 @@ public class FilesProcessService {
 		}
 		return metaDataList;
 	}
+	
+	private  String removeInvalidChar(String line) {
+		String correctedString = line;
+		correctedString = line.replaceAll("[^\\x20-\\x7e]", "");
+		logger.debug("Ivalid Character corrected: UTFrem" + correctedString);
+		return correctedString;
+	}
+
+
 
 	private Properties getIgnoreWordDictonary() {
 		return loadProperyOut("ignore.properties");

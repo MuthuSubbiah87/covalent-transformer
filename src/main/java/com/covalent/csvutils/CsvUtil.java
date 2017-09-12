@@ -22,9 +22,9 @@ public class CsvUtil {
 	public CSVReader getCSVReader(String file) {
 		CSVReader reader = null;
 		try {
-			reader = new CSVReader(new FileReader(file), ',');
-//			 reader = new CSVReader(new InputStreamReader(new FileInputStream(
-//			 file), "UTF-8" ), ','); 
+			//reader = new CSVReader(new FileReader(file), ',');
+			 reader = new CSVReader(new InputStreamReader(new FileInputStream(
+			 file), "UTF-8" ), ','); 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
