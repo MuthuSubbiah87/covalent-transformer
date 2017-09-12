@@ -25,6 +25,11 @@ public final class CovalentServiceImpl implements CovalentService{
 		covalentRepository.delete(id);
 		return null;
 	}
+	
+	@Override
+	public void deleteAll() {
+		covalentRepository.deleteAll();
+	}
 
 	@Override
 	public List<FileModel> findAll() {

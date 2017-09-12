@@ -71,31 +71,68 @@ app.controller('uploadController', function($scope, $http, $location) {
 	$scope.setFile = function(element) {
 			$scope.theFile = element.files[0];
 	};
+	
+	$scope.deleteFile = function(id) {
+		$scope.showLoading = true;
+		$http({
+	        method : "DELETE",
+	        url : "/file/delete/" + id
+	    }).then(function mySuccess(response) {
+	    		$scope.filesList = response;
+	    		getFilesList();
+	    		console.log('Delete file success');
+	    		//$scope.showLoading = false;
+	    }, function myError(response) {
+	    		console.log('Delete file error');
+	    		$scope.showLoading = false;
+	    });
+	}
+	
+	$scope.deleteAllFiles = function() {
+		$scope.showLoading = true;
+		$http({
+	        method : "DELETE",
+	        url : "/file/deleteall"
+	    }).then(function mySuccess(response) {
+	    		$scope.filesList = response;
+	    		console.log('Delete all files success');
+	    		$scope.showLoading = false;
+	    }, function myError(response) {
+	    		console.log('Delete all files error');
+	    		$scope.showLoading = false;
+	    });
+	}
 
 	$scope.uploadFile = function() {
-		$scope.progress = 1;
-		$scope.progressStyle = 'width: 1%'
-		$scope.isProgresBarVisible = true;
-		$scope.showSuccess = false;
+		
+		//$scope.showSuccess = false;
 		var uploadUrl = '/upload/';
 		var file = $scope.theFile;
-		var fd = new FormData();
-		fd.append('file', file);
-		console.log('file :' + file);
-		console.log('uploadUrl :' + uploadUrl);
-		$scope.showLoading = true;
-		$http.post(uploadUrl, fd, {
-			transformRequest : angular.identity,
-			headers : {
-				'Content-Type' : undefined
-			}
-		}).then(function mySuccess(response) {
-			console.log('file upload complete' + response);
-			$scope.showLoading = false;
-		}, function myerror(error) {
-			//alert('Request for correction successfully submitted');
-			$scope.showLoading = false;
-		});
+		if (file) {
+			$scope.progress = 1;
+			$scope.progressStyle = 'width: 1%'
+			$scope.isProgresBarVisible = true;
+			var fd = new FormData();
+			fd.append('file', file);
+			console.log('file :' + file);
+			console.log('uploadUrl :' + uploadUrl);
+			$scope.showLoading = true;
+			$http.post(uploadUrl, fd, {
+				transformRequest : angular.identity,
+				headers : {
+					'Content-Type' : undefined
+				}
+			}).then(function mySuccess(response) {
+				console.log('file upload complete' + response);
+				$scope.showLoading = false;
+			}, function myerror(error) {
+				//alert('Request for correction successfully submitted');
+				$scope.showLoading = false;
+			});
+		} else {
+			alert('Please select file');
+		}
+		
 	};
 
 });

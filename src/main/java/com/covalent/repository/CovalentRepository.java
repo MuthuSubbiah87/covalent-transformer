@@ -20,7 +20,7 @@ public interface CovalentRepository extends MongoRepository<FileModel, String> {
      * Deletes a Employee entry from the database.
      * @param deleted   The deleted Employee entry.
      */
-    void delete(FileModel fileModel);
+    void delete(String id);
 
     /**
      * Finds all Employee entries from the database.
@@ -42,4 +42,11 @@ public interface CovalentRepository extends MongoRepository<FileModel, String> {
      * @return      The information of the saved Employee entry.
      */
     FileModel save(FileModel fileModel);
+    
+    /**
+    * Deletes all Employee entry from the database.
+    * @param deleted   The deleted Employee entry.
+    */
+   void deleteAll();
+    
 }

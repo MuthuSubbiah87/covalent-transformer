@@ -3,7 +3,6 @@ package com.covalent.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
@@ -60,7 +59,6 @@ public class FilesProcessService {
 		try {
 			/** Uploading File **/
 			logger.debug("Inside process method");
-
 			byte[] bytes = file.getBytes();
 			logger.debug("Current Thread Name: " + Thread.currentThread());
 			covalentProperties = getCovalentProperty();
@@ -121,10 +119,7 @@ public class FilesProcessService {
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
-
-
 		return fileList;
-
 	}
 
 	public List<FileModel> getAllFilesList(){

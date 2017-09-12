@@ -15,16 +15,21 @@
 <body>
 	<div class="container-fluid" ng-app="app" ng-controller="uploadController">
 			<div class="row">
-				<div class="loading-bar" ng-if="showLoading"></div>
+				<div class="loading-bar" ng-if="showLoading" >
+					<div class="element-center element-vertical-center align-center">
+						<span class="glyphicon glyphicon-time loading-time"></span>
+						<h3>Please Wait</h3>
+					</div>
+				</div>
 				
-				<div class="jumbotron align-center">
-					<h1>Covalent File Transformer</h1>
-					<p>Automated Metadata Correction Tool</p>
+				<div class="align-center">
+					<img src="/img/covalent_logo.jpg"/>
+					<p class="sub-heading">Automated Metadata Correction Tool</p>
 				</div>
 			</div>
 			
 			<div class="row">
-				<div class="col-sm-12 col-md-12 col-xs-12 col-lg-12 align-center">
+				<div class="col-sm-12 col-md-12 col-xs-12 col-lg-12 align-center formgroup-space">
 
 					<div class="form-group element-center">
 						<input class="btn btn-primary" type="file"
@@ -64,14 +69,15 @@
 							<th>#</th>
 							<th>Input File URL</th>
 							<th>Output File URL</th>
-
 							<th>Status</th>
+							<th class="align-center">Delete All&nbsp;&nbsp;<span ng-click="deleteAllFiles()" class="glyphicon glyphicon-trash"></span></th>
 						</tr>
 						<tr ng-repeat="eachFile in filesList.data">
 							<td>{{$index}}</td>
 							<td><a href="{{eachFile.fileUrl}}">{{eachFile.fileName}}</a></td>
 							<td><a href="{{eachFile.fixedFileUrl}}">{{eachFile.fixedFileName}}</a></td>
 							<td>{{eachFile.fixedFileStatus}}</td>
+							<td class="align-center"><span ng-click="deleteFile(eachFile.id)" class="glyphicon glyphicon-trash"></span></td>
 						</tr>
 					</table>
 				</div>

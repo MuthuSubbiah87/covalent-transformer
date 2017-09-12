@@ -47,4 +47,6 @@ public interface CovalentService {
      * @throws com.javaadvent.bootrest.todo.TodoNotFoundException if no user entry is found.
      */
     FileModel update(FileModel user);
+
+	void deleteAll();
 }
