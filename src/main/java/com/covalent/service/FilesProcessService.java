@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.covalent.common.CommonUtils;
 import com.covalent.common.CovalentConstants;
 import com.covalent.csvutils.CsvUtil;
 import com.covalent.csvutils.MetaData;
@@ -223,15 +224,15 @@ public class FilesProcessService {
 
 
 	private Properties getIgnoreWordDictonary() {
-		return loadProperyOut("ignore.properties");
+		return CommonUtils.loadProperyOut("ignore.properties");
 	}
 
 	private Properties getCustomDictonary() {
-		return loadProperyOut("replace.properties");
+		return CommonUtils.loadProperyOut("replace.properties");
 	}
 	
 	private Properties getCovalentProperty() {
-		return loadProperyOut("covalent.properties");
+		return CommonUtils.loadProperyOut("covalent.properties");
 	}
 
 	/*private Properties loadPropery(String filename) {
@@ -257,7 +258,7 @@ public class FilesProcessService {
 		return prop;
 	}*/
 	
-	private Properties loadProperyOut(String filename) {
+	/*private Properties loadProperyOut(String filename) {
 		Properties prop = new Properties();
 	    try {
 	        File jarPath=new File(FilesProcessService.class.getProtectionDomain().getCodeSource().getLocation().getPath());
@@ -270,6 +271,6 @@ public class FilesProcessService {
 	        e1.printStackTrace();
 	    }
 		return prop;
-	}
+	}*/
 
 }

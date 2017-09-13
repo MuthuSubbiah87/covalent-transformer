@@ -7,14 +7,17 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import com.covalent.common.CommonUtils;
+
 @Configuration
 @PropertySource("classpath:covalent.properties")
 public class AppConfig extends WebMvcConfigurerAdapter {
 	@Autowired
 	private Environment env;
-    @Override
+    
+	@Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/download/**").addResourceLocations("file:"+env.getProperty("covalent.download.path"));
-        registry.addResourceHandler("/upload/**").addResourceLocations("file:"+env.getProperty("covalent.upload.path"));
+		registry.addResourceHandler("/download/**").addResourceLocations("file:"+CommonUtils.loadProperyOut("covalent.properties").getProperty("covalent.download.path"));
+        registry.addResourceHandler("/upload/**").addResourceLocations("file:"+CommonUtils.loadProperyOut("covalent.properties").getProperty("covalent.upload.path"));
     }
 }
