@@ -8,7 +8,7 @@ app.controller('uploadController', function($scope, $http, $location) {
 	
 	$scope.progress = 0;
 	$scope.progressStyle = 'width:0%'
-		
+	$scope.fileName = 'Choose File...';
 	$scope.showSuccess = false;
 	connect();
 	
@@ -17,6 +17,13 @@ app.controller('uploadController', function($scope, $http, $location) {
 		getFilesList();
 	};
 	
+	$scope.uploadFromImg = function() {
+		$('#uploadFileId').click();
+	}
+	
+	$scope.closeMessage = function() {
+		$scope.showSuccess = false;
+	};
 	
 	function connect() {
 	    var socket = new SockJS('/ws-root');
@@ -70,6 +77,8 @@ app.controller('uploadController', function($scope, $http, $location) {
 	
 	$scope.setFile = function(element) {
 			$scope.theFile = element.files[0];
+			$scope.fileName = $scope.theFile.name;
+			$scope.$digest();
 	};
 	
 	$scope.deleteFile = function(id) {
