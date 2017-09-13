@@ -42,12 +42,19 @@ public class UploadController {
 		}
 		try {
 			logger.debug("Uploading File: " + file.getName());
-			filesProcessService.processTheFile(file);
+			byte[] bytes  = uploadFile(file);
+			filesProcessService.processTheFile(file, bytes);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		return "redirect:/uploadStatus";
+	}
+	
+	private byte[] uploadFile(MultipartFile file) throws IOException {
+		/** Uploading File **/
+		byte[] bytes = file.getBytes();
+		return bytes;
 	}
 	
 }

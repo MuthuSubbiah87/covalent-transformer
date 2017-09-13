@@ -46,20 +46,20 @@ public class FilesProcessService {
 
 	@Async
 	public CompletableFuture<Iterable<FileModel>> processTheFile(
-			@RequestParam("file") MultipartFile file)
+			@RequestParam("file") MultipartFile file, byte[] bytes)
 			throws InterruptedException, IOException {
 		logger.info("Got file to process");
 		// Artificial delay of 1s for demonstration purposes
-		return CompletableFuture.completedFuture(processFile(file));
+		return CompletableFuture.completedFuture(processFile(file, bytes));
 	}
 
-	private List<FileModel> processFile(@RequestParam("file") MultipartFile file)
+	private List<FileModel> processFile(@RequestParam("file") MultipartFile file, byte[] bytes)
 			throws IOException {
 		List<FileModel> fileList = null;
 		try {
 			/** Uploading File **/
-			logger.debug("Inside process method");
-			byte[] bytes = file.getBytes();
+			//logger.debug("Inside process method");
+			//byte[] bytes = file.getBytes();
 			logger.debug("Current Thread Name: " + Thread.currentThread());
 			covalentProperties = getCovalentProperty();
 			Path path = Paths.get(covalentProperties.getProperty("covalent.upload.path")
